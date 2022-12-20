@@ -1,5 +1,6 @@
 import math
 
+
 def create_file(file: bytes, filename: str) -> str:
     name: str = f"assets/{filename}"
     with open(name, "wb") as img:
