@@ -1,12 +1,19 @@
 import os.path
-from typing import Union
-
 from fastapi import FastAPI, File
 import face_recognition
 from file import create_file, face_distance_to_conf
 import uuid
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.post("/")
