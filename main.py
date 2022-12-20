@@ -4,6 +4,18 @@ import face_recognition
 from file import create_file, face_distance_to_conf
 import uuid
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
+
+class ComparisonResponse(BaseModel):
+    is_same: bool
+    percentage: float
+
+    def __init__(self, is_same: bool, percentage: float, **data):
+        super().__init__(**data)
+        self.is_same = is_same
+        self.percentage = percentage
+
 
 app = FastAPI()
 
@@ -16,8 +28,8 @@ app.add_middleware(
 )
 
 
-@app.post("/")
-def read_root(cni: bytes = File(...), img: bytes = File(...)):
+@app.post("/", response_model=ComparisonResponse)
+def read_root(cni: bytes = File(...), img: bytes = File(...)) -> ComparisonResponse:
     img1_location = create_file(cni, str(uuid.uuid1()))
     face1 = face_recognition.load_image_file(img1_location)
     f1_face_encoding = face_recognition.face_encodings(face1)[0]
@@ -26,7 +38,7 @@ def read_root(cni: bytes = File(...), img: bytes = File(...)):
     face2 = face_recognition.load_image_file(img2_location)
     f2_face_encoding = face_recognition.face_encodings(face2)[0]
 
-    result: bool = face_recognition.compare_faces([f1_face_encoding], f2_face_encoding)[0]
+    result_bool: bool = face_recognition.compare_faces([f1_face_encoding], f2_face_encoding)[0]
     face_distance = face_recognition.face_distance([f1_face_encoding], f2_face_encoding)[0]
 
     if os.path.exists(img1_location):
@@ -35,8 +47,6 @@ def read_root(cni: bytes = File(...), img: bytes = File(...)):
     if os.path.exists(img2_location):
         os.remove(img2_location)
 
-    result = {
-        "is_same": bool(result),
-        "percentage": face_distance_to_conf(face_distance)*100
-    }
+    result = ComparisonResponse(is_same=bool(result_bool), percentage=face_distance_to_conf(face_distance)*100)
+
     return result
