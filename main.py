@@ -25,6 +25,7 @@ app.add_middleware(
 
 @app.post("/", response_model=ComparisonResponse)
 def read_root(cni: bytes = File(...), img: bytes = File(...)):
+    print("**** Request ****")
     img1_location = create_file(cni, str(uuid.uuid1()))
     face1 = face_recognition.load_image_file(img1_location)
     f1_face_encoding = face_recognition.face_encodings(face1)[0]
