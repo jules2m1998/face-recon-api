@@ -37,6 +37,6 @@ def read_root(cni: bytes = File(...), img: bytes = File(...)):
 
     result = {
         "is_same": bool(result),
-        "percentage": face_distance_to_conf(face_distance)
+        "percentage": face_distance_to_conf(face_distance)*100
     }
     return result
