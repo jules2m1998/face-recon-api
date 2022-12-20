@@ -11,11 +11,6 @@ class ComparisonResponse(BaseModel):
     is_same: bool
     percentage: float
 
-    def __init__(self, is_same: bool, percentage: float, **data):
-        super().__init__(**data)
-        self.is_same = is_same
-        self.percentage = percentage
-
 
 app = FastAPI()
 
@@ -29,7 +24,7 @@ app.add_middleware(
 
 
 @app.post("/", response_model=ComparisonResponse)
-def read_root(cni: bytes = File(...), img: bytes = File(...)) -> ComparisonResponse:
+def read_root(cni: bytes = File(...), img: bytes = File(...)):
     img1_location = create_file(cni, str(uuid.uuid1()))
     face1 = face_recognition.load_image_file(img1_location)
     f1_face_encoding = face_recognition.face_encodings(face1)[0]
@@ -47,6 +42,9 @@ def read_root(cni: bytes = File(...), img: bytes = File(...)) -> ComparisonRespo
     if os.path.exists(img2_location):
         os.remove(img2_location)
 
-    result = ComparisonResponse(is_same=bool(result_bool), percentage=face_distance_to_conf(face_distance)*100)
+    result = {
+        "is_same": bool(result_bool),
+        "percentage": face_distance_to_conf(face_distance)*100
+    }
 
     return result
