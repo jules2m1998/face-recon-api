@@ -8,7 +8,7 @@ from pydantic import BaseModel
 
 
 class ComparisonResponse(BaseModel):
-    is_same: bool
+    # is_same: bool
     percentage: float
 
 
@@ -33,7 +33,7 @@ def read_root(cni: bytes = File(...), img: bytes = File(...)):
     face2 = face_recognition.load_image_file(img2_location)
     f2_face_encoding = face_recognition.face_encodings(face2)[0]
 
-    result_bool: bool = face_recognition.compare_faces([f1_face_encoding], f2_face_encoding)[0]
+    # result_bool: bool = face_recognition.compare_faces([f1_face_encoding], f2_face_encoding)[0]
     face_distance = face_recognition.face_distance([f1_face_encoding], f2_face_encoding)[0]
 
     if os.path.exists(img1_location):
@@ -43,7 +43,7 @@ def read_root(cni: bytes = File(...), img: bytes = File(...)):
         os.remove(img2_location)
 
     result = {
-        "is_same": bool(result_bool),
+        # "is_same": bool(result_bool),
         "percentage": face_distance_to_conf(face_distance)*100
     }
 
